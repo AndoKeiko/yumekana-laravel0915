@@ -6,7 +6,7 @@ return [
 
   'allowed_methods' => ['*'],
 
-  'allowed_origins' => ['https://gajumaro.sakura.ne.jp'],
+  'allowed_origins' => ['https://gajumaro.sakura.ne.jp', 'https://gajumaro.sakura.ne.jp/yumekana'],
 
   'allowed_origins_patterns' => [],
 
@@ -19,4 +19,3 @@ return [
   'supports_credentials' => true,
 
 ];
-
