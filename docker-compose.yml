@@ -2,13 +2,13 @@ services:
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         links:
-            - mysql:mysql
+            - 'mysql:mysql'
         ports:
-            - 8080:80
+            - '${FORWARD_PHPMYADMIN_PORT:-8080}:80'
         environment:
-            MYSQL_USERNAME: "${DB_USERNAME}"
-            MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
             PMA_HOST: mysql
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            PMA_ABSOLUTE_URI: 'http://localhost:${FORWARD_PHPMYADMIN_PORT:-8080}/'
         networks:
             - sail
     laravel.test:

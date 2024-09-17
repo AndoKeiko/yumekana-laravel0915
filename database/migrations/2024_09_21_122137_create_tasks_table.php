@@ -16,6 +16,8 @@ class CreateTasksTable extends Migration
           $table->text('description')->nullable();
           $table->integer('elapsed_time')->default(0);
           $table->integer('estimated_time');
+          $table->date('start_date')->nullable();
+          $table->time('start_time')->nullable();
           $table->unsignedTinyInteger('priority');
           $table->unsignedInteger('order')->default(0);
           $table->enum('review_interval', ['next_day', '7_days', '14_days', '28_days', '56_days', 'completed'])

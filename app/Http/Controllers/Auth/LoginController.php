@@ -5,46 +5,42 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($request->only('email', 'password'))) {
             $user = Auth::user();
             $token = $user->createToken('auth-token')->plainTextToken;
 
             return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
                 'user' => $user,
-                'token' => $token,
-                'message' => 'Logged in successfully',
             ]);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        throw ValidationException::withMessages([
+            'email' => ['The provided credentials are incorrect.'],
+        ]);
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => 'Logged out successfully']);
     }
 
-    public function refresh(Request $request)
+    public function user(Request $request)
     {
-        $user = $request->user();
-        $user->tokens()->delete();
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return response()->json([
-            'token' => $token,
-            'token_type' => 'bearer',
-        ]);
+        return response()->json($request->user());
     }
 }

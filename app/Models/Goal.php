@@ -21,6 +21,7 @@ class Goal extends Model
     'period_end',
     'description',
     'status',
+    'total_time',
     'progress_percentage',
 ];
 
@@ -30,7 +31,8 @@ protected $casts = [
     'period_start' => 'date',
     'period_end' => 'date',
     'description' => 'string',
-    'status' => 'string',
+    'status' => 'integer',
+    'total_time' => 'integer',
     'progress_percentage' => 'integer',
 ];
 

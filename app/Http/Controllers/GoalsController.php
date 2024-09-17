@@ -28,14 +28,15 @@ class GoalsController extends Controller
   {
     Log::info('Received request data:', $request->all());
         $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'name' => 'required|string|max:255',
-            'current_status' => 'nullable|string',
-            'period_start' => 'required|date',
-            'period_end' => 'required|date|after:period_start',
-            'description' => 'nullable|string',
-            'status' => 'required|in:not_started,in_progress,completed,cancelled',
-            'progress_percentage' => 'required|integer|min:0|max:100',
+          'user_id' => 'required|exists:users,id',
+          'name' => 'required|string|max:255',
+          'current_status' => 'nullable|string',
+          'period_start' => 'required|date',
+          'period_end' => 'required|date|after:period_start',
+          'description' => 'nullable|string',
+          'status' => 'required|integer|min:0',
+          'total_time' => 'required|integer|min:0',
+          'progress_percentage' => 'required|integer|min:0|max:100',
         ]);
 
     $goal = Goal::create($validatedData);
@@ -62,13 +63,14 @@ class GoalsController extends Controller
         $goal = Goal::findOrFail($id);
 
         $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'current_status' => 'nullable|string',
-            'period_start' => 'sometimes|required|date',
-            'period_end' => 'sometimes|required|date|after:period_start',
-            'description' => 'nullable|string',
-            'status' => 'sometimes|required|in:not_started,in_progress,completed,cancelled',
-            'progress_percentage' => 'sometimes|required|integer|min:0|max:100',
+          'name' => 'sometimes|required|string|max:255',
+          'current_status' => 'nullable|string',
+          'period_start' => 'sometimes|required|date',
+          'period_end' => 'sometimes|required|date|after:period_start',
+          'description' => 'nullable|string',
+          'status' => 'sometimes|required|integer|min:0',
+          'total_time' => 'sometimes|required|integer|min:0',
+          'progress_percentage' => 'sometimes|required|integer|min:0|max:100',
         ]);
 
         $goal->update($validatedData);
@@ -77,8 +79,8 @@ class GoalsController extends Controller
             'message' => 'Goal updated successfully',
             'goal' => $goal,
         ]);
-    } catch (ModelNotFoundException $e) {
-        return response()->json(['error' => 'Goal not found'], 404);
+      } catch (ModelNotFoundException $e) {
+        return response()->json(['error' => '目標が見つかりません'], 404);
     }
   }
 
@@ -103,11 +105,12 @@ class GoalsController extends Controller
     if (!$goal) {
       return response()->json(['error' => 'Goal not found'], 404);
     }
-
+    $userMessage = $request->input('description');
     $prompt = "目標: {$goal->name}\n"
     . "現在の状況: {$goal->current_status}\n"
     . "目標期間開始: {$goal->period_start}\n"
     . "目標期間終了: {$goal->period_end}\n\n"
+    . "その他注釈事項: {$userMessage}\n\n"
     . "この情報に基づいて、目標期間内に目標を達成するための学習スケジュールを作成してください。\n"
     . "以下の点に注意してスケジュールを作成してください：\n"
     . "1. 各タスクや活動に推奨される時間を含めてください。時間は数値（小数点以下1桁まで）で表してください。\n"
@@ -115,7 +118,6 @@ class GoalsController extends Controller
     . "3. 週単位の時間（例：週5時間）や月単位の時間（例：月20時間）は、目標期間内の総時間に変換してください。\n"
     . "4. すべての時間は、目標期間全体での合計時間として計算してください。\n"
     . "5. 回答はタスクごとに改行してください。\n\n"
-    . "ユーザーメッセージ: {$goal->description}\n\n"
     . "回答は日本語で、以下のJSONフォーマットにて作成してください：\n\n"
     . "[\n"
     . "  {\n"
@@ -149,7 +151,7 @@ class GoalsController extends Controller
           'user_id' => $request->user()->id,
           'name' => $task['taskName'],
           'estimated_time' => $task['taskTime'],
-          'priority' => $task['priority'],
+          'priority' => $task['taskPriority'],
       ]);
       }
     } else {

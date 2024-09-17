@@ -16,7 +16,8 @@ class CreateGoalsTable extends Migration
         $table->date('period_start');
         $table->date('period_end');
         $table->text('description')->nullable();
-        $table->enum('status', ['not_started', 'in_progress', 'completed', 'cancelled'])->default('not_started');
+        $table->integer('status')->default(0);
+        $table->integer('total_time')->default(0)->nullable();
         $table->integer('progress_percentage')->default(0);
         $table->timestamps();
         });

@@ -4,7 +4,7 @@ use Laravel\Sanctum\Sanctum;
 
 return [
 
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Stateful Domains
     |--------------------------------------------------------------------------
@@ -15,12 +15,8 @@ return [
     |
     */
 
-    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
-      '%s%s',
-      'localhost,localhost:3000,localhost:5174,127.0.0.1,127.0.0.1:8000,::1',
-      env('APP_URL') ? ','.parse_url(env('APP_URL'), PHP_URL_HOST) : ''
-  ))),
-    /*
+'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'localhost:5174,127.0.0.1:5174,localhost:8080,127.0.0.1:8080,https://gajumaro.sakura.ne.jp/yumekana/')),
+  /*
     |--------------------------------------------------------------------------
     | Sanctum Guards
     |--------------------------------------------------------------------------
@@ -32,9 +28,9 @@ return [
     |
     */
 
-    'guard' => ['web'],
+  'guard' => ['web'],
 
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Expiration Minutes
     |--------------------------------------------------------------------------
@@ -45,9 +41,9 @@ return [
     |
     */
 
-    'expiration' => null,
+  'expiration' => null,
 
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Token Prefix
     |--------------------------------------------------------------------------
@@ -60,9 +56,9 @@ return [
     |
     */
 
-    'token_prefix' => env('SANCTUM_TOKEN_PREFIX', ''),
+  'token_prefix' => env('SANCTUM_TOKEN_PREFIX', ''),
 
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Sanctum Middleware
     |--------------------------------------------------------------------------
@@ -73,10 +69,10 @@ return [
     |
     */
 
-    'middleware' => [
-        'authenticate_session' => Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
-        'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
-        'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
-    ],
+  'middleware' => [
+    'authenticate_session' => Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
+    'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
+    'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
+  ],
 
 ];

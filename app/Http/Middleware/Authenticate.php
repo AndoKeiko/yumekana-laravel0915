@@ -17,7 +17,8 @@ class Authenticate extends Middleware
             return null;
         }
 
-        // APIリクエストでない場合、loginルートにリダイレクト
-        return route('login');
+        // React側のルートを使うため、リダイレクトしない
+        // ここでのリダイレクトを取り除き、APIでは401エラーを返す
+        return null;  // これにより、リダイレクトなし
     }
 }
