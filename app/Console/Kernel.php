@@ -11,18 +11,6 @@ use Carbon\Carbon;
 
 class Kernel extends ConsoleKernel
 {
-    /**
-     * Define the application's command schedule.
-     */
-    protected function schedule(Schedule $schedule): void
-    {
-        // $schedule->command('inspire')->hourly();
-        $schedule->command('schedule:notify')->everyMinute();
-    }
-
-    /**
-     * Register the commands for the application.
-     */
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {

@@ -15,7 +15,8 @@ return [
     |
     */
 
-'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'localhost:5174,127.0.0.1:5174,localhost:8080,127.0.0.1:8080,https://gajumaro.sakura.ne.jp/yumekana/')),
+'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'gajumaro.sakura.ne.jp,localhost,127.0.0.1')),
+
   /*
     |--------------------------------------------------------------------------
     | Sanctum Guards
