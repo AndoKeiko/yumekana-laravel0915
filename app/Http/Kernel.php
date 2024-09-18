@@ -30,6 +30,7 @@ protected $middlewareGroups = [
     'api' => [
       \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
       \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+      'throttle:api',
       \Illuminate\Routing\Middleware\SubstituteBindings::class,
   ],
 ];

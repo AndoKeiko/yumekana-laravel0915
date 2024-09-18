@@ -1,14 +1,11 @@
 <?php
 
 return [
-
-  'paths' => ['api/*', 'sanctum/csrf-cookie'],
-  'allowed_methods' => ['*'],
-  'allowed_origins' => ['https://yumekana.sakuraweb.com', 'http://localhost:5174'],
-  'allowed_origins_patterns' => [],
-  'allowed_headers' => ['*'],
-  'exposed_headers' => [],
-  'max_age' => 0,
   'supports_credentials' => true,
-
+  'allowed_origins' => ['https://yumekana.sakuraweb.com'],  // フロントエンドのURL
+  'allowed_methods' => ['*'],
+  'allowed_headers' => ['*'],
+  'exposed_headers' => ['XSRF-TOKEN'],
+  'max_age' => 0,
+  'paths' => ['api/*', 'sanctum/csrf-cookie'],
 ];
