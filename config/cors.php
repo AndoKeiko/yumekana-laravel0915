@@ -6,7 +6,7 @@ return [
 
   'allowed_methods' => ['*'],
 
-  'allowed_origins' => ['https://gajumaro.sakura.ne.jp', 'https://gajumaro.sakura.ne.jp/yumekana'],
+  'allowed_origins' => ['https://gajumaro.sakura.ne.jp', 'https://gajumaro.sakura.ne.jp/yumekana','http://localhost:5174'],
 
   'allowed_origins_patterns' => [],
 

@@ -277,54 +277,54 @@ class TaskController extends Controller
       return response()->json(['error' => 'タスクが見つかりません'], 404);
     }
   }
-  public function updateElapsedTime(Request $request, $goalId, $taskId)
-  {
-    $validatedData = $request->validate([
-      'elapsed_time' => 'required|integer',
-    ]);
-    try {
-      $task = Task::where('goal_id', $goalId)->findOrFail($taskId);
-      $task->elapsed_time = $validatedData['elapsed_time'];
-      $task->save();
+  // public function updateElapsedTime(Request $request, $goalId, $taskId)
+  // {
+  //   $validatedData = $request->validate([
+  //     'elapsed_time' => 'required|integer',
+  //   ]);
+  //   try {
+  //     $task = Task::where('goal_id', $goalId)->findOrFail($taskId);
+  //     $task->elapsed_time = $validatedData['elapsed_time'];
+  //     $task->save();
 
-      return response()->json([
-        'message' => 'Elapsed time updated successfully',
-        'task' => $task,
-      ]);
-    } catch (ModelNotFoundException $e) {
-      return response()->json(['message' => '指定されたタスクが見つかりません'], 404);
-    } catch (\Exception $e) {
-      Log::error('Task elapsed time update failed', ['error' => $e->getMessage(), 'task_id' => $taskId]);
-      return response()->json([
-        'message' => 'Task elapsed time update failed',
-        'error' => $e->getMessage(),
-      ], 500);
-    }
-  }
-  public function updateReviewInterval(Request $request, $goalId, $taskId)
-  {
-    $validatedData = $request->validate([
-      'review_interval' => 'required|string|in:' . implode(',', Task::REVIEW_INTERVALS),
-    ]);
+  //     return response()->json([
+  //       'message' => 'Elapsed time updated successfully',
+  //       'task' => $task,
+  //     ]);
+  //   } catch (ModelNotFoundException $e) {
+  //     return response()->json(['message' => '指定されたタスクが見つかりません'], 404);
+  //   } catch (\Exception $e) {
+  //     Log::error('Task elapsed time update failed', ['error' => $e->getMessage(), 'task_id' => $taskId]);
+  //     return response()->json([
+  //       'message' => 'Task elapsed time update failed',
+  //       'error' => $e->getMessage(),
+  //     ], 500);
+  //   }
+  // }
+  // public function updateReviewInterval(Request $request, $goalId, $taskId)
+  // {
+  //   $validatedData = $request->validate([
+  //     'review_interval' => 'required|string|in:' . implode(',', Task::REVIEW_INTERVALS),
+  //   ]);
 
-    try {
-      $task = Task::where('goal_id', $goalId)->findOrFail($taskId);
-      $task->review_interval = $validatedData['review_interval'];
-      $task->repetition_count += 1;
-      $task->save();
+  //   try {
+  //     $task = Task::where('goal_id', $goalId)->findOrFail($taskId);
+  //     $task->review_interval = $validatedData['review_interval'];
+  //     $task->repetition_count += 1;
+  //     $task->save();
 
-      return response()->json([
-        'message' => 'Task review interval updated successfully',
-        'task' => $task,
-      ], 200);
-    } catch (ModelNotFoundException $e) {
-      return response()->json(['message' => '指定されたタスクが見つかりません'], 404);
-    } catch (\Exception $e) {
-      Log::error('Task review interval update failed', ['error' => $e->getMessage(), 'task_id' => $taskId]);
-      return response()->json([
-        'message' => 'Task review interval update failed',
-        'error' => $e->getMessage(),
-      ], 500);
-    }
-  }
+  //     return response()->json([
+  //       'message' => 'Task review interval updated successfully',
+  //       'task' => $task,
+  //     ], 200);
+  //   } catch (ModelNotFoundException $e) {
+  //     return response()->json(['message' => '指定されたタスクが見つかりません'], 404);
+  //   } catch (\Exception $e) {
+  //     Log::error('Task review interval update failed', ['error' => $e->getMessage(), 'task_id' => $taskId]);
+  //     return response()->json([
+  //       'message' => 'Task review interval update failed',
+  //       'error' => $e->getMessage(),
+  //     ], 500);
+  //   }
+  // }
 }
