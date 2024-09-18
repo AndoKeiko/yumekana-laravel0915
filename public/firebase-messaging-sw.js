@@ -1,6 +1,8 @@
+importScripts('https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js?charset=utf-8');
+importScripts('https://www.gstatic.com/firebasejs/9.17.1/firebase-messaging-compat.js?charset=utf-8');
 // Firebase v9 互換レイヤーを使用する場合
-importScripts('https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.17.1/firebase-messaging-compat.js');
+// importScripts('https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js');
+// importScripts('https://www.gstatic.com/firebasejs/9.17.1/firebase-messaging-compat.js');
 
 // Firebase の構成オブジェクト
 firebase.initializeApp({
