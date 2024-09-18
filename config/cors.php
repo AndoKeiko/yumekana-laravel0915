@@ -6,13 +6,13 @@ return [
 
   'allowed_methods' => ['*'],
 
-  'allowed_origins' => ['https://gajumaro.sakura.ne.jp', 'https://gajumaro.sakura.ne.jp/yumekana','http://localhost:5174'],
+  'allowed_origins' => ['https://yumekana.sakuraweb.com', 'http://localhost:5174'],
 
   'allowed_origins_patterns' => [],
 
   'allowed_headers' => ['*'],
 
-  'exposed_headers' => [],
+  'exposed_headers' => false,
 
   'max_age' => 0,
 
