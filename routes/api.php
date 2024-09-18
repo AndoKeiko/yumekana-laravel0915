@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [LoginController::class, 'logout']);
   Route::get('/user', [UsersController::class, 'user']);
   Route::get('/user/me', [UsersController::class, 'me']); // この行を追加
-  Route::post('/refresh-token', [RefreshTokenController::class, 'refresh']);
+  // Route::post('/refresh-token', [RefreshTokenController::class, 'refresh']);
   Route::post('/update-fcm-token', [UsersController::class, 'updateFcmToken']);
   Route::post('/fcm-token', [FCMController::class, 'storeToken']);
   

@@ -38,7 +38,7 @@ return [
   'http_only' => true,
 
 
-  'same_site' => 'none',
+  'same_site' => 'strict',
 
 
   'partitioned' => false,
