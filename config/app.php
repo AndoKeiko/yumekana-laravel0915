@@ -11,7 +11,7 @@ return [
 
     'debug' => (bool) env('APP_DEBUG', false),
 
-    'url' => env('APP_URL', 'https://gajumaro.sakura.ne.jp/yumekana/'),
+    'url' => env('APP_URL', 'https://yumekana.sakuraweb.com/'),
 
     'asset_url' => env('ASSET_URL'),
 
