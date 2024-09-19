@@ -31,7 +31,7 @@ return [
         'https://lala.sakuraweb.com',
         // 他の必要なサブドメイン
     ],
-  'allowed_origins_patterns' => [],
+  'allowed_origins_patterns' => '#^https://.*\.sakuraweb\.com$#',
   'allowed_headers' => ['*'],
   'exposed_headers' => [],
   'max_age' => 0,
