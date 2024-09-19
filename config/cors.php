@@ -23,6 +23,8 @@
 //     'max_age' => 3600,
 //     'supports_credentials' => true,
 // ];
+
+
 return [
   'paths' => ['api/*', 'sanctum/csrf-cookie'],
   'allowed_methods' => ['*'],
