@@ -20,8 +20,8 @@ class VerifyCsrfToken extends Middleware
     'login',
     'register',
     'sanctum/csrf-cookie',  // SanctumのCSRFトークン取得ルートを除外
-    'https://yumekana.sakuraweb.com/*',
-    'https://lala.sakuraweb.com/*',
+    'https://gajumaro.sakura.ne.jp/yumekana/*',
+    'https://gajumaro.sakura.ne.jp/yumekana-lala/*',
   ];
 
   /**

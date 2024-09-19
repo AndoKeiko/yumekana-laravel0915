@@ -30,15 +30,15 @@ return [
   'path' => '/',
 
 
-'domain' => '.sakuraweb.com',
+  'domain' => 'gajumaro.sakura.ne.jp',
 
 
-  'secure' => env('SESSION_SECURE_COOKIE', true),
+  'secure' => true,  // これは必ずSSLを使用している場合のみ
 
   'http_only' => true,
 
 
-  'same_site' => 'lax',
+  'same_site' => 'none',
 
 
   'partitioned' => false,
