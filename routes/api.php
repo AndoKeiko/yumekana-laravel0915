@@ -12,11 +12,11 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\FCMController;
 
 // CORSプリフライトリクエスト用のルート（必要な場合）
-Route::options('/{any}', function () {
-  return response('', 204)
-      ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE')
-      ->header('Access-Control-Allow-Headers', 'Content-Type, X-Auth-Token, Origin, Authorization');
-})->where('any', '.*');
+// Route::options('/{any}', function () {
+//   return response('', 204)
+//       ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE')
+//       ->header('Access-Control-Allow-Headers', 'Content-Type, X-Auth-Token, Origin, Authorization');
+// })->where('any', '.*');
 
 // 認証不要のルート
 Route::post('/login', [LoginController::class, 'login']);
@@ -42,8 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::post('/complete-profile', [UsersController::class, 'completeProfile']);
   });
 
-});
-
   // Goals関連のルート
   Route::prefix('goals')->group(function () {
     Route::post('/', [GoalsController::class, 'store']);
@@ -66,11 +64,15 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::put('/{taskId}/review-interval', [TaskController::class, 'updateReviewInterval']);
     });
   });
-
-Route::get('/debug', function (Request $request) {
-  return response()->json([
-      'user' => $request->user(),
-      'authenticated' => Auth::check(),
-      'session' => $request->session()->all(),
-  ]);
 });
+
+
+// if (app()->environment('local', 'staging')) {
+  Route::get('/debug', function (Request $request) {
+      return response()->json([
+          'user' => $request->user(),
+          'authenticated' => Auth::check(),
+          'session' => $request->session()->all(),
+      ]);
+  });
+// }
