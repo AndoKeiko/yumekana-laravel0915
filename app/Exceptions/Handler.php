@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -23,8 +24,10 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
-        });
+      $this->reportable(function (Throwable $e) {
+        if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+            Log::error('CORS Error: ' . $e->getMessage());
+        }
+    });
     }
 }

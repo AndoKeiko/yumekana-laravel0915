@@ -30,7 +30,7 @@ return [
   'path' => '/',
 
 
- 'domain' => env('SESSION_DOMAIN', null),
+'domain' => '.sakuraweb.com',
 
 
   'secure' => env('SESSION_SECURE_COOKIE', true),

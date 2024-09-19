@@ -5,43 +5,43 @@ use Illuminate\Support\ServiceProvider;
 
 return [
 
-    'name' => env('APP_NAME', 'Laravel'),
+  'name' => env('APP_NAME', 'Laravel'),
 
-    'env' => env('APP_ENV', 'production'),
+  'env' => env('APP_ENV', 'production'),
 
-    'debug' => (bool) env('APP_DEBUG', false),
+  'debug' => (bool) env('APP_DEBUG', false),
 
-    'url' => env('APP_URL', 'https://yumekana.sakuraweb.com/'),
+  'url' => env('APP_URL', 'https://lala.sakuraweb.com'),
 
-    'asset_url' => env('ASSET_URL'),
+  'asset_url' => env('ASSET_URL'),
 
-    'timezone' => 'Asia/Tokyo',
+  'timezone' => 'Asia/Tokyo',
 
-    'locale' => 'ja',
+  'locale' => 'ja',
 
-    'fallback_locale' => 'ja',
+  'fallback_locale' => 'ja',
 
-    'faker_locale' => 'ja_JP',
+  'faker_locale' => 'ja_JP',
 
-    'key' => env('APP_KEY'),
+  'key' => env('APP_KEY'),
 
-    'cipher' => 'AES-256-CBC',
+  'cipher' => 'AES-256-CBC',
 
-    'maintenance' => [
-        'driver' => 'file',
-        // 'store' => 'redis',
-    ],
+  'maintenance' => [
+    'driver' => 'file',
+    // 'store' => 'redis',
+  ],
 
-      'providers' => ServiceProvider::defaultProviders()->merge([
-        App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
-    ])->toArray(),
+  'providers' => ServiceProvider::defaultProviders()->merge([
+    App\Providers\AppServiceProvider::class,
+    App\Providers\AuthServiceProvider::class,
+    // App\Providers\BroadcastServiceProvider::class,
+    App\Providers\EventServiceProvider::class,
+    App\Providers\RouteServiceProvider::class,
+  ])->toArray(),
 
-    'aliases' => Facade::defaultAliases()->merge([
-        // 'Example' => App\Facades\Example::class,
-    ])->toArray(),
+  'aliases' => Facade::defaultAliases()->merge([
+    // 'Example' => App\Facades\Example::class,
+  ])->toArray(),
 
 ];
