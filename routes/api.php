@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\RefreshTokenController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\FCMController;
+use Illuminate\Support\Facades\Auth;
 
 // CORSプリフライトリクエスト用のルート（必要な場合）
 // Route::options('/{any}', function () {

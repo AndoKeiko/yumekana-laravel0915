@@ -26,7 +26,7 @@ class GoalsController extends Controller
 
   public function store(Request $request): JsonResponse
   {
-    Log::info('Received request data:', $request->all());
+    Log::info('Received submission  data:', $request->all());
         $validatedData = $request->validate([
           'user_id' => 'required|exists:users,id',
           'name' => 'required|string|max:255',
