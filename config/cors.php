@@ -6,6 +6,7 @@ return [
   'allowed_origins' => [
       'https://gajumaro.sakura.ne.jp/yumekana',
       'https://gajumaro.sakura.ne.jp/yumekana-lala',
+      'http://localhost:5174/yumekana',
   ],
   'allowed_headers' => ['*'],
   'exposed_headers' => [],
