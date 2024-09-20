@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Goal;
 use App\Models\Task;
-use Exception;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class GoalsController extends Controller
 {
@@ -113,50 +115,50 @@ class GoalsController extends Controller
 
 
   public function chat(Request $request, $id)
-  {
-      Log::info("Chat request received for goal: " . $id);
-      Log::info("Request method: " . $request->method());
-      Log::info("Request data: " . json_encode($request->all()));
-  
-      try {
-          $request->validate([
-              'message' => 'required|string',
-          ]);
-  
-          $goal = Goal::findOrFail($id);
-          $userMessage = $request->input('message');
-          
-          $prompt = $this->buildPrompt($goal, $userMessage);
-          $aiResponse = $this->getAIResponse($prompt);
-          $tasks = $this->parseAIResponse($aiResponse);
-          
-          DB::beginTransaction();
-          try {
-              $createdTasks = $this->createTasks($tasks, $id, $request->user()->id);
-              DB::commit();
-          } catch (\Exception $e) {
-              DB::rollBack();
-              Log::error('Failed to create tasks: ' . $e->getMessage());
-              return response()->json(['error' => 'Failed to create tasks'], 500);
-          }
-  
-          return response()->json([
-              'message' => 'Chat completed successfully',
-              'response' => $aiResponse,
-              'tasks' => $createdTasks,
-          ]);
-  
-      } catch (ValidationException $e) {
-          Log::error('Validation failed: ' . json_encode($e->errors()));
-          return response()->json(['error' => $e->errors()], 422);
-      } catch (ModelNotFoundException $e) {
-          Log::error('Goal not found: ' . $e->getMessage());
-          return response()->json(['error' => 'Goal not found'], 404);
-      } catch (\Exception $e) {
-          Log::error('Unexpected error in chat: ' . $e->getMessage());
-          return response()->json(['error' => 'An unexpected error occurred'], 500);
-      }
-  }
+    {
+        Log::info("Chat request received for goal: " . $id);
+        Log::info("Request method: " . $request->method());
+        Log::info("Request data: " . json_encode($request->all()));
+
+        try {
+            $request->validate([
+                'message' => 'required|string',
+            ]);
+
+            $goal = Goal::findOrFail($id);
+            $userMessage = $request->input('message');
+            
+            $prompt = $this->buildPrompt($goal, $userMessage);
+            $aiResponse = $this->getAIResponse($prompt);
+            $tasks = $this->parseAIResponse($aiResponse);
+            
+            DB::beginTransaction();
+            try {
+                $createdTasks = $this->createTasks($tasks, $id, $request->user()->id);
+                DB::commit();
+            } catch (Exception $e) {
+                DB::rollBack();
+                Log::error('Failed to create tasks: ' . $e->getMessage());
+                return response()->json(['error' => 'Failed to create tasks'], 500);
+            }
+
+            return response()->json([
+                'message' => 'Chat completed successfully',
+                'response' => $aiResponse,
+                'tasks' => $createdTasks,
+            ]);
+
+        } catch (ValidationException $e) {
+            Log::error('Validation failed: ' . json_encode($e->errors()));
+            return response()->json(['error' => $e->errors()], 422);
+        } catch (ModelNotFoundException $e) {
+            Log::error('Goal not found: ' . $e->getMessage());
+            return response()->json(['error' => 'Goal not found'], 404);
+        } catch (Exception $e) {
+            Log::error('Unexpected error in chat: ' . $e->getMessage());
+            return response()->json(['error' => 'An unexpected error occurred'], 500);
+        }
+    }
   
   private function buildPrompt(Goal $goal, string $userMessage): string
   {
