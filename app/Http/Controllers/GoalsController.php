@@ -154,16 +154,29 @@ class GoalsController extends Controller
           'priority' => $task['taskPriority'],
       ]);
       }
-    } else {
-      $jsonError = json_last_error_msg();
-      Log::error('Failed to parse tasks', ['content' => $content, 'error' => $jsonError]);
-      return response()->json(['error' => 'Failed to parse tasks: ' . $jsonError], 500);
-    }
-
-    return response()->json([
-      'response' => $content,
-      'message' => 'Chat completed successfully',
-    ]);
+      $createdTasks = [];
+      if (is_array($tasks)) {
+          foreach ($tasks as $task) {
+              $createdTask = Task::create([
+                  'goal_id' => $id,
+                  'user_id' => $request->user()->id,
+                  'name' => $task['taskName'],
+                  'estimated_time' => $task['taskTime'],
+                  'priority' => $task['taskPriority'],
+              ]);
+              $createdTasks[] = $createdTask;
+          }
+      } else {
+          $jsonError = json_last_error_msg();
+          Log::error('Failed to parse tasks', ['content' => $content, 'error' => $jsonError]);
+          return response()->json(['error' => 'Failed to parse tasks: ' . $jsonError], 500);
+      }
+  
+      return response()->json([
+          'response' => $content,
+          'message' => 'Chat completed successfully',
+          'tasks' => $createdTasks,
+      ]);
   }
 
   private function convertPriorityToInt($priority)
