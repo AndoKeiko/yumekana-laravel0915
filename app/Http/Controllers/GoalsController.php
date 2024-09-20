@@ -111,24 +111,56 @@ class GoalsController extends Controller
       return response()->json($goals);
   }
 
+
   public function chat(Request $request, $id)
   {
       Log::info("Chat request received for goal: " . $id);
       Log::info("Request method: " . $request->method());
       Log::info("Request data: " . json_encode($request->all()));
-
-      $request->validate([
-          'message' => 'required|string',
-      ]);
-
+  
       try {
+          $request->validate([
+              'message' => 'required|string',
+          ]);
+  
           $goal = Goal::findOrFail($id);
+          $userMessage = $request->input('message');
+          
+          $prompt = $this->buildPrompt($goal, $userMessage);
+          $aiResponse = $this->getAIResponse($prompt);
+          $tasks = $this->parseAIResponse($aiResponse);
+          
+          DB::beginTransaction();
+          try {
+              $createdTasks = $this->createTasks($tasks, $id, $request->user()->id);
+              DB::commit();
+          } catch (\Exception $e) {
+              DB::rollBack();
+              Log::error('Failed to create tasks: ' . $e->getMessage());
+              return response()->json(['error' => 'Failed to create tasks'], 500);
+          }
+  
+          return response()->json([
+              'message' => 'Chat completed successfully',
+              'response' => $aiResponse,
+              'tasks' => $createdTasks,
+          ]);
+  
+      } catch (ValidationException $e) {
+          Log::error('Validation failed: ' . json_encode($e->errors()));
+          return response()->json(['error' => $e->errors()], 422);
       } catch (ModelNotFoundException $e) {
+          Log::error('Goal not found: ' . $e->getMessage());
           return response()->json(['error' => 'Goal not found'], 404);
+      } catch (\Exception $e) {
+          Log::error('Unexpected error in chat: ' . $e->getMessage());
+          return response()->json(['error' => 'An unexpected error occurred'], 500);
       }
-
-      $userMessage = $request->input('message');
-      $prompt = "目標: {$goal->name}\n"
+  }
+  
+  private function buildPrompt(Goal $goal, string $userMessage): string
+  {
+      return "目標: {$goal->name}\n"
           . "現在の状況: {$goal->current_status}\n"
           . "目標期間開始: {$goal->period_start}\n"
           . "目標期間終了: {$goal->period_end}\n\n"
@@ -154,42 +186,55 @@ class GoalsController extends Controller
           . "  }\n"
           . "  ...\n"
           . "]";
-
-      $result = OpenAI::chat()->create([
-          'model' => 'gpt-4o-mini',
-          'messages' => [
-              ['role' => 'system', 'content' => $prompt],
-          ],
-      ]);
-
-      $content = $result->choices[0]->message->content;
-      $content = preg_replace('/```json\s*|\s*```/', '', $content);
-      
+  }
+  
+  private function getAIResponse(string $prompt): string
+  {
       try {
-          $tasks = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-      } catch (\JsonException $e) {
-          Log::error('Failed to parse tasks', ['content' => $content, 'error' => $e->getMessage()]);
-          return response()->json(['error' => 'Failed to parse tasks: ' . $e->getMessage()], 500);
+          $result = OpenAI::chat()->create([
+              'model' => 'gpt-4o-mini',
+              'messages' => [
+                  ['role' => 'system', 'content' => $prompt],
+              ],
+          ]);
+  
+          $content = $result->choices[0]->message->content;
+          Log::info('AI Response received: ' . $content);
+          return preg_replace('/```json\s*|\s*```/', '', $content);
+      } catch (\Exception $e) {
+          Log::error('Failed to get AI response: ' . $e->getMessage());
+          throw new \Exception('Failed to generate AI response');
       }
-
+  }
+  
+  private function parseAIResponse(string $response): array
+  {
+      try {
+          $tasks = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+          if (!is_array($tasks)) {
+              throw new \Exception('Decoded response is not an array');
+          }
+          return $tasks;
+      } catch (\JsonException $e) {
+          Log::error('Failed to parse AI response: ' . $e->getMessage());
+          throw new \Exception('Failed to parse AI response');
+      }
+  }
+  
+  private function createTasks(array $tasks, int $goalId, int $userId): array
+  {
       $createdTasks = [];
-      
       foreach ($tasks as $task) {
           $createdTask = Task::create([
-              'goal_id' => $id,
-              'user_id' => $request->user()->id,
+              'goal_id' => $goalId,
+              'user_id' => $userId,
               'name' => $task['taskName'],
               'estimated_time' => $task['taskTime'],
               'priority' => $task['taskPriority'],
           ]);
           $createdTasks[] = $createdTask;
       }
-
-      return response()->json([
-          'message' => 'Chat completed successfully',
-          'response' => $content,
-          'tasks' => $createdTasks,
-      ]);
+      return $createdTasks;
   }
 
 
