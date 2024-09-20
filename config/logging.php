@@ -54,7 +54,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single', 'slack'],
+            'channels' => ['single'],
             'ignore_exceptions' => false,
         ],
 
@@ -73,14 +73,14 @@ return [
             'replace_placeholders' => true,
         ],
 
-        'slack' => [
-            'driver' => 'slack',
-            'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => 'Laravel Log',
-            'emoji' => ':boom:',
-            'level' => env('LOG_LEVEL', 'critical'),
-            'replace_placeholders' => true,
-        ],
+        // 'slack' => [
+        //     'driver' => 'slack',
+        //     'url' => env('LOG_SLACK_WEBHOOK_URL'),
+        //     'username' => 'Laravel Log',
+        //     'emoji' => ':boom:',
+        //     'level' => env('LOG_LEVEL', 'critical'),
+        //     'replace_placeholders' => true,
+        // ],
 
         'papertrail' => [
             'driver' => 'monolog',
