@@ -8,6 +8,7 @@
 .env
 .env.backup
 .env.production
+.env.testing
 .env卒制
 .envローカル
 .phpunit.result.cache
