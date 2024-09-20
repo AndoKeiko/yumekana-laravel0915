@@ -3,11 +3,7 @@
 use Laravel\Sanctum\Sanctum;
 
 return [
-'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
-    '%s%s',
-    'localhost,localhost:5174,127.0.0.1,::1,gajumaro.sakura.ne.jp',
-    env('APP_URL') ? ',' . parse_url(env('APP_URL'), PHP_URL_HOST) : ''
-))),
+'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'localhost:5174,gajumaro.sakura.ne.jp')),
   'guard' => ['web'],
 'expiration' => env('SANCTUM_TOKEN_EXPIRATION', 60 * 24),
   'middleware' => [
@@ -15,5 +11,5 @@ return [
     'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
   ],
   'prefix' => 'sanctum',
-  'domain' => env('SESSION_DOMAIN', null),
+  'domain' => env('SESSION_DOMAIN', 'gajumaro.sakura.ne.jp'),
 ];
