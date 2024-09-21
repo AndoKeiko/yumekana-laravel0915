@@ -45,13 +45,13 @@ class LoginController extends Controller
 
         return response()->json(['message' => 'Logged out successfully']);
     }
-
+    
     public function refresh(Request $request)
     {
         $user = $request->user();
         $user->tokens()->delete();
         $token = $user->createToken('auth-token')->plainTextToken;
-
+    
         return response()->json([
             'token' => $token,
             'token_type' => 'bearer',

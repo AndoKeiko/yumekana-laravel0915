@@ -83,4 +83,16 @@ class LoginController extends Controller
             throw $e;
         }
     }
+
+    public function refresh(Request $request)
+    {
+        $user = $request->user();
+        $user->tokens()->delete();
+        $token = $user->createToken('auth-token')->plainTextToken;
+    
+        return response()->json([
+            'token' => $token,
+            'token_type' => 'bearer',
+        ]);
+    }
 }
