@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -20,25 +21,24 @@ class LoginController extends Controller
                 'password' => 'required',
             ]);
 
-            Log::info('Login validation passed');
+            $user = \App\Models\User::where('email', $request->email)->first();
 
-            if (Auth::attempt($request->only('email', 'password'))) {
-                $user = Auth::user();
-                Log::info('User authenticated successfully', ['user_id' => $user->id]);
-
-                $token = $user->createToken('auth-token')->plainTextToken;
-                Log::info('Token created successfully');
-
-                return response()->json([
-                    'access_token' => $token,
-                    'token_type' => 'Bearer',
-                    'user' => $user,
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                Log::warning('Login failed: Invalid credentials', ['email' => $request->email]);
+                throw ValidationException::withMessages([
+                    'email' => ['The provided credentials are incorrect.'],
                 ]);
             }
 
-            Log::warning('Login failed: Invalid credentials', ['email' => $request->email]);
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+            Log::info('User authenticated successfully', ['user_id' => $user->id]);
+
+            $token = $user->createToken('auth-token')->plainTextToken;
+            Log::info('Token created successfully');
+
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => $user,
             ]);
         } catch (\Exception $e) {
             Log::error('Login error', [
@@ -86,13 +86,34 @@ class LoginController extends Controller
 
     public function refresh(Request $request)
     {
-        $user = $request->user();
-        $user->tokens()->delete();
-        $token = $user->createToken('auth-token')->plainTextToken;
-    
-        return response()->json([
-            'token' => $token,
-            'token_type' => 'bearer',
-        ]);
+        try {
+            $user = $request->user();
+        
+            if (!$user) {
+                Log::warning('Token refresh attempt for unauthenticated user');
+                return response()->json(['error' => 'Unauthenticated'], 401);
+            }
+        
+            // 古いトークンを無効化
+            $user->tokens()->delete();
+        
+            $newAccessToken = $user->createToken('auth-token', ['*'], now()->addMinutes(15));
+            $newRefreshToken = $user->createToken('refresh-token', ['*'], now()->addDays(7));
+        
+            Log::info('Tokens refreshed successfully', ['user_id' => $user->id]);
+
+            return response()->json([
+                'access_token' => $newAccessToken->plainTextToken,
+                'refresh_token' => $newRefreshToken->plainTextToken,
+                'token_type' => 'bearer',
+                'expires_in' => 900 // 15分
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Token refresh error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
     }
 }
