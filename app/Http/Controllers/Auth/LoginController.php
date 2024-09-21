@@ -13,52 +13,70 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
+        // ログイン試行をログに記録
         Log::info('Login attempt', ['email' => $request->email]);
 
         try {
+            // 入力のバリデーション
+            // 'email' と 'password' が必須で、emailは正しい形式である必要があります。
             $request->validate([
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
 
+            // ユーザーをメールアドレスで検索
             $user = \App\Models\User::where('email', $request->email)->first();
 
+            // ユーザーが見つからないか、パスワードが一致しない場合はエラーを返す
             if (!$user || !Hash::check($request->password, $user->password)) {
+                // ログイン失敗をログに記録
                 Log::warning('Login failed: Invalid credentials', ['email' => $request->email]);
+
+                // バリデーションエラーを投げる（フロントエンド側で処理される）
                 throw ValidationException::withMessages([
                     'email' => ['The provided credentials are incorrect.'],
                 ]);
             }
 
+            // ログイン成功をログに記録
             Log::info('User authenticated successfully', ['user_id' => $user->id]);
 
+            // アクセストークンを作成
             $token = $user->createToken('auth-token')->plainTextToken;
+
+            // トークン作成成功をログに記録
             Log::info('Token created successfully');
 
+            // フロントエンドにアクセストークンとユーザー情報を返す
             return response()->json([
                 'access_token' => $token,
-                'token_type' => 'Bearer',
-                'user' => $user,
+                'token_type' => 'Bearer', // Bearerトークンのタイプ
+                'user' => $user, // ユーザー情報も一緒に返す
             ]);
         } catch (\Exception $e) {
+            // エラーが発生した場合はログに詳細な情報を記録
             Log::error('Login error', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            throw $e;
+            throw $e; // フロントエンドに例外を返す
         }
     }
 
     public function logout(Request $request)
     {
+        // ログアウト試行をログに記録
         Log::info('Logout attempt', ['user_id' => $request->user()->id]);
 
         try {
+            // 現在のアクセストークンを削除してログアウト
             $request->user()->currentAccessToken()->delete();
             Log::info('User logged out successfully', ['user_id' => $request->user()->id]);
 
+            // ログアウト成功メッセージを返す
             return response()->json(['message' => 'Logged out successfully']);
         } catch (\Exception $e) {
+            // エラーが発生した場合の処理
             Log::error('Logout error', [
                 'user_id' => $request->user()->id,
                 'message' => $e->getMessage(),
@@ -70,11 +88,14 @@ class LoginController extends Controller
 
     public function user(Request $request)
     {
+        // ユーザー情報取得リクエストをログに記録
         Log::info('User info request', ['user_id' => $request->user()->id]);
 
         try {
+            // 認証されたユーザー情報を返す
             return response()->json($request->user());
         } catch (\Exception $e) {
+            // エラーが発生した場合
             Log::error('Error fetching user info', [
                 'user_id' => $request->user()->id,
                 'message' => $e->getMessage(),
@@ -87,33 +108,39 @@ class LoginController extends Controller
     public function refresh(Request $request)
     {
         try {
+            // 認証済みのユーザーを取得
             $user = $request->user();
-        
+
+            // 認証されていない場合はエラーレスポンスを返す
             if (!$user) {
                 Log::warning('Token refresh attempt for unauthenticated user');
                 return response()->json(['error' => 'Unauthenticated'], 401);
             }
-        
+
             // 古いトークンを無効化
             $user->tokens()->delete();
-        
+
+            // 新しいアクセストークンとリフレッシュトークンを作成
             $newAccessToken = $user->createToken('auth-token', ['*'], now()->addMinutes(15));
             $newRefreshToken = $user->createToken('refresh-token', ['*'], now()->addDays(7));
-        
+
+            // トークンのリフレッシュ成功をログに記録
             Log::info('Tokens refreshed successfully', ['user_id' => $user->id]);
 
+            // 新しいトークンをフロントエンドに返す
             return response()->json([
                 'access_token' => $newAccessToken->plainTextToken,
                 'refresh_token' => $newRefreshToken->plainTextToken,
-                'token_type' => 'bearer',
-                'expires_in' => 900 // 15分
+                'token_type' => 'bearer', // トークンタイプ
+                'expires_in' => 900 // 15分後に有効期限切れ
             ]);
         } catch (\Exception $e) {
+            // エラーが発生した場合、ログにエラー内容を記録し、エラーレスポンスを返す
             Log::error('Token refresh error', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            throw $e;
+            return response()->json(['error' => 'Failed to refresh token'], 500); // エラーコード 500 を返す
         }
     }
 }
