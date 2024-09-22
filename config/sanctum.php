@@ -11,5 +11,6 @@ return [
     'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
   ],
   'prefix' => 'sanctum',
-  'domain' => env('SESSION_DOMAIN', 'gajumaro.sakura.ne.jp'),
+  // 'domain' => env('SESSION_DOMAIN', 'gajumaro.sakura.ne.jp'),
+  'domain' => null,
 ];
