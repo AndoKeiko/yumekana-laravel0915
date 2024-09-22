@@ -110,6 +110,10 @@ class LoginController extends Controller
 
   public function refresh(Request $request)
   {
+    Log::debug('Refresh request received', [
+      'token' => $request->bearerToken(),
+      'headers' => $request->headers->all()
+  ]);
       try {
           // リクエストからリフレッシュトークンを取得
           $refreshToken = $request->bearerToken();
@@ -140,7 +144,7 @@ class LoginController extends Controller
           // 新しいアクセストークンとリフレッシュトークンを発行
           $newAccessToken = $user->createToken('auth-token', ['*'], now()->addMinutes(15));
           $newRefreshToken = $user->createToken('refresh-token', ['*'], now()->addDays(7));
-  
+          Log::info('Token refreshed successfully', ['user_id' => $user->id]);
           return response()->json([
               'access_token' => $newAccessToken->plainTextToken,
               'refresh_token' => $newRefreshToken->plainTextToken,
