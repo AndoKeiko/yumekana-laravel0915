@@ -52,10 +52,14 @@ class LoginController extends Controller
       $refreshToken = $user->createToken('refresh-token', ['*']);
 
       // 有効期限を設定
-      $accessToken->token->expires_at = now()->addMinutes(15);
-      $accessToken->token->save();
-      $refreshToken->token->expires_at = now()->addDays(7);
-      $refreshToken->token->save();
+      if ($accessToken->token && $refreshToken->token) {
+        // 有効期限を設定
+        $accessToken->token->expires_at = now()->addMinutes(15);
+        $accessToken->token->save();
+    
+        $refreshToken->token->expires_at = now()->addDays(7);
+        $refreshToken->token->save();
+    }
 
       // 【変更】トークンをクッキーに設定
       $accessTokenCookie = cookie('access_token', $accessToken->plainTextToken, 15, null, null, false, true);
