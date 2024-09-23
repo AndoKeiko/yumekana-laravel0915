@@ -45,22 +45,31 @@ class LoginController extends Controller
       $token = $user->createToken('auth-token')->plainTextToken;
 
       // リフレッシュトークンを作成（Sanctumのデフォルトではこれを自動で返しません）
-      $refreshToken = $user->createToken('refresh-token', ['*'], now()->addDays(7))->plainTextToken;
+      // $refreshToken = $user->createToken('refresh-token', ['*'], now()->addDays(7))->plainTextToken;
 
+      // トークンを作成
+      $accessToken = $user->createToken('auth-token', ['*']);
+      $refreshToken = $user->createToken('refresh-token', ['*']);
+
+      // 有効期限を設定
+      $accessToken->token->expires_at = now()->addMinutes(15);
+      $accessToken->token->save();
+      $refreshToken->token->expires_at = now()->addDays(7);
+      $refreshToken->token->save();
+
+      // 【変更】トークンをクッキーに設定
+      $accessTokenCookie = cookie('access_token', $accessToken->plainTextToken, 15, null, null, false, true);
+      $refreshTokenCookie = cookie('refresh_token', $refreshToken->plainTextToken, 10080, null, null, false, true);
       // トークンの作成成功をログに記録
       Log::info('Tokens created successfully', [
         'user_id' => $user->id,
-        'access_token' => substr($token, 0, 10), // トークンの一部をログに記録
+        'access_token' => substr($accessToken, 0, 10), // トークンの一部をログに記録
         'refresh_token' => substr($refreshToken, 0, 10) // トークンの一部をログに記録
       ]);
 
-      // フロントエンドにアクセストークンとユーザー情報を返す
       return response()->json([
-        'access_token' => $token,
-        'refresh_token' => $refreshToken,
-        'token_type' => 'Bearer', // Bearerトークンのタイプ
-        'user' => $user, // ユーザー情報も一緒に返す
-      ]);
+        'user' => $user,
+      ])->cookie($accessTokenCookie)->cookie($refreshTokenCookie);
     } catch (\Exception $e) {
       // エラーが発生した場合はログに詳細な情報を記録
       Log::error('Login error', [
@@ -73,26 +82,18 @@ class LoginController extends Controller
 
   public function logout(Request $request)
   {
-    // ログアウト試行をログに記録
-    Log::info('Logout attempt', ['user_id' => $request->user()->id]);
-
-    try {
-      // 現在のアクセストークンを削除してログアウト
-      $request->user()->currentAccessToken()->delete();
-      Log::info('User logged out successfully', ['user_id' => $request->user()->id]);
-
-      // ログアウト成功メッセージを返す
-      return response()->json(['message' => 'Logged out successfully']);
-    } catch (\Exception $e) {
-      // エラーが発生した場合の処理
-      Log::error('Logout error', [
-        'user_id' => $request->user()->id,
-        'message' => $e->getMessage(),
-        'trace' => $e->getTraceAsString()
-      ]);
-      throw $e;
-    }
+    // 現在のアクセストークンを削除
+    $request->user()->currentAccessToken()->delete();
+  
+    // クッキーを無効化
+    $accessTokenCookie = cookie('access_token', '', -1, null, null, false, true);
+    $refreshTokenCookie = cookie('refresh_token', '', -1, null, null, false, true);
+  
+    return response()->json(['message' => 'Logged out successfully'])
+      ->cookie($accessTokenCookie)
+      ->cookie($refreshTokenCookie);
   }
+  
 
   public function user(Request $request)
   {
@@ -115,15 +116,9 @@ class LoginController extends Controller
 
   public function refresh(Request $request)
   {
-    Log::debug('Refresh request received', [
-      'token' => $request->bearerToken(),
-      'headers' => $request->headers->all()
-    ]);
     try {
-      // リクエストからリフレッシュトークンを取得
-      $refreshToken = $request->bearerToken();
+      $refreshToken = $request->cookie('refresh_token');
 
-      // リフレッシュトークンが存在しない場合
       if (!$refreshToken) {
         Log::warning('No refresh token provided');
         return response()->json(['error' => 'No refresh token provided'], 401);
@@ -132,39 +127,38 @@ class LoginController extends Controller
       // リフレッシュトークンをデータベースから取得
       $tokenRecord = \Laravel\Sanctum\PersonalAccessToken::findToken($refreshToken);
 
-      // トークンが存在しない、または無効な場合
-      if (!$tokenRecord || !$tokenRecord->tokenable || $tokenRecord->expires_at->isPast()) {
+      if (
+        !$tokenRecord ||
+        !$tokenRecord->tokenable ||
+        ($tokenRecord->expires_at && $tokenRecord->expires_at->isPast())
+      ) {
         Log::warning('Invalid or expired refresh token', [
           'refresh_token' => $refreshToken
-      ]);
+        ]);
         return response()->json(['error' => 'Invalid or expired refresh token'], 401);
       }
 
-      // ユーザー情報を取得
       $user = $tokenRecord->tokenable;
 
-      if (!$user) {
-        Log::error('User not found for refresh token', ['refresh_token' => $refreshToken]);
-        return response()->json(['error' => 'User not found'], 401);
-      }
-
-      // 古いトークンを無効化
+      // 古いトークンを削除
       $user->tokens()->delete();
 
-      // 新しいアクセストークンとリフレッシュトークンを発行
-      $newAccessToken = $user->createToken('auth-token', ['*'], now()->addMinutes(15));
-      $newRefreshToken = $user->createToken('refresh-token', ['*'], now()->addDays(7));
-      Log::info('Token refreshed successfully', [
-        'user_id' => $user->id,
-        'new_access_token' => substr($newAccessToken->plainTextToken, 0, 10),
-        'new_refresh_token' => substr($newRefreshToken->plainTextToken, 0, 10)
-    ]);
+      // 新しいアクセストークンとリフレッシュトークンを作成
+      $newAccessToken = $user->createToken('auth-token', ['*']);
+      $newAccessToken->token->expires_at = now()->addMinutes(15);
+      $newAccessToken->token->save();
+
+      $newRefreshToken = $user->createToken('refresh-token', ['*']);
+      $newRefreshToken->token->expires_at = now()->addDays(7);
+      $newRefreshToken->token->save();
+
+      // クッキーに新しいトークンを設定
+      $accessTokenCookie = cookie('access_token', $newAccessToken->plainTextToken, 15, null, null, false, true);
+      $refreshTokenCookie = cookie('refresh_token', $newRefreshToken->plainTextToken, 10080, null, null, false, true);
+
       return response()->json([
-        'access_token' => $newAccessToken->plainTextToken,
-        'refresh_token' => $newRefreshToken->plainTextToken,
-        'token_type' => 'bearer',
-        'expires_in' => 900 // 15分
-      ]);
+        'message' => 'Token refreshed successfully'
+      ])->cookie($accessTokenCookie)->cookie($refreshTokenCookie);
     } catch (\Exception $e) {
       Log::error('Token refresh error', [
         'message' => $e->getMessage(),
