@@ -14,54 +14,56 @@ class LoginController extends Controller
 
   public function login(Request $request)
   {
-      // ログイン試行をログに記録
-      Log::info('Login attempt', ['email' => $request->email]);
-  
-      try {
-          // 入力のバリデーション
-          $request->validate([
-              'email' => 'required|email',
-              'password' => 'required',
-          ]);
-  
-          // ユーザーをメールアドレスで検索
-          $user = \App\Models\User::where('email', $request->email)->first();
-  
-          // ユーザーが見つからないか、パスワードが一致しない場合はエラーを返す
-          if (!$user || !Hash::check($request->password, $user->password)) {
-              Log::warning('Login failed: Invalid credentials', ['email' => $request->email]);
-              throw ValidationException::withMessages([
-                  'email' => ['The provided credentials are incorrect.'],
-              ]);
-          }
-  
-          Log::info('User authenticated successfully', ['user_id' => $user->id]);
-  
-          // アクセストークンとリフレッシュトークンを作成
-          $accessToken = $user->createToken('auth-token', ['*'])->plainTextToken;
-          $refreshToken = $user->createToken('refresh-token', ['*'])->plainTextToken;
-  
-          // クッキーにトークンを設定
-          $accessTokenCookie = cookie('access_token', $accessToken, 15, null, null, false, true);
-          $refreshTokenCookie = cookie('refresh_token', $refreshToken, 10080, null, null, false, true);
-  
-          Log::info('Tokens created successfully', [
-              'user_id' => $user->id,
-              'access_token' => substr($accessToken, 0, 10),
-              'refresh_token' => substr($refreshToken, 0, 10)
-          ]);
-  
-          return response()->json(['user' => $user])
-              ->cookie($accessTokenCookie)
-              ->cookie($refreshTokenCookie);
-  
-      } catch (\Exception $e) {
-          Log::error('Login error', [
-              'message' => $e->getMessage(),
-              'trace' => $e->getTraceAsString()
-          ]);
-          throw $e;
+    // ログイン試行をログに記録
+    Log::info('Login attempt', ['email' => $request->email]);
+
+    try {
+      // 入力のバリデーション
+      $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+      ]);
+
+      // ユーザーをメールアドレスで検索
+      $user = \App\Models\User::where('email', $request->email)->first();
+
+      // ユーザーが見つからないか、パスワードが一致しない場合はエラーを返す
+      if (!$user || !Hash::check($request->password, $user->password)) {
+        Log::warning('Login failed: Invalid credentials', ['email' => $request->email]);
+        throw ValidationException::withMessages([
+          'email' => ['The provided credentials are incorrect.'],
+        ]);
       }
+
+      Log::info('User authenticated successfully', ['user_id' => $user->id]);
+
+      // アクセストークンとリフレッシュトークンを作成
+      $accessToken = $user->createToken('auth-token', ['*'])->plainTextToken;
+      $refreshToken = $user->createToken('refresh-token', ['*'])->plainTextToken;
+
+      // クッキーにトークンを設定
+      $accessTokenCookie = cookie('access_token', $accessToken, 15, null, null, false, true);
+      $refreshTokenCookie = cookie('refresh_token', $refreshToken, 10080, null, null, false, true);
+
+      Log::info('Tokens created successfully', [
+        'user_id' => $user->id,
+        'access_token' => substr($accessToken, 0, 10),
+        'refresh_token' => substr($refreshToken, 0, 10)
+      ]);
+
+      return response()->json([
+        'user' => $user,
+        'access_token' => $accessToken,
+        'refresh_token' => $refreshToken
+      ])->cookie($accessTokenCookie)
+        ->cookie($refreshTokenCookie);
+    } catch (\Exception $e) {
+      Log::error('Login error', [
+        'message' => $e->getMessage(),
+        'trace' => $e->getTraceAsString()
+      ]);
+      throw $e;
+    }
   }
 
 
@@ -69,16 +71,16 @@ class LoginController extends Controller
   {
     // 現在のアクセストークンを削除
     $request->user()->currentAccessToken()->delete();
-  
+
     // クッキーを無効化
     $accessTokenCookie = cookie('access_token', '', -1, null, null, false, true);
     $refreshTokenCookie = cookie('refresh_token', '', -1, null, null, false, true);
-  
+
     return response()->json(['message' => 'Logged out successfully'])
       ->cookie($accessTokenCookie)
       ->cookie($refreshTokenCookie);
   }
-  
+
 
   public function user(Request $request)
   {
