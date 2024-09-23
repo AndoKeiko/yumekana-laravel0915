@@ -12,5 +12,5 @@ return [
   ],
   'prefix' => 'sanctum',
   // 'domain' => env('SESSION_DOMAIN', 'gajumaro.sakura.ne.jp'),
-  'domain' => null,
+  'domain' => env('SESSION_DOMAIN', 'gajumaro.sakura.ne.jp'),
 ];
