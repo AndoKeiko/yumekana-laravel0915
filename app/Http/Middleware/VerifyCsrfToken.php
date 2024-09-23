@@ -35,15 +35,15 @@ class VerifyCsrfToken extends Middleware
    */
   public function handle($request, Closure $next)
   {
-      if (app()->environment('local', 'testing')) {
-          Log::info('VerifyCsrfToken middleware reached', [
-              'url' => $request->fullUrl(),
-              'method' => $request->method(),
-              'has_csrf_token' => $request->hasCookie('XSRF-TOKEN'),
-              'has_csrf_header' => $request->header('X-XSRF-TOKEN')
-          ]);
-      }
-  
+      // デバッグ用のログ出力（リクエストURL、メソッド、CSRFトークンの有無を記録）
+      Log::info('VerifyCsrfToken middleware triggered', [
+          'url' => $request->fullUrl(),
+          'method' => $request->method(),
+          'has_csrf_cookie' => $request->hasCookie('XSRF-TOKEN'),
+          'csrf_token_in_header' => $request->header('X-XSRF-TOKEN'),
+          'csrf_token_in_body' => $request->input('_token')
+      ]);
+
       try {
           if (
               $this->isReading($request) ||
@@ -51,13 +51,30 @@ class VerifyCsrfToken extends Middleware
               $this->inExceptArray($request) ||
               $this->tokensMatch($request)
           ) {
+              // トークンが一致した場合、成功ログ
+              Log::info('CSRF token matched for request', [
+                  'url' => $request->fullUrl(),
+                  'method' => $request->method(),
+              ]);
               return $this->addCookieToResponse($request, $next($request));
           }
       } catch (TokenMismatchException $e) {
-          Log::warning('CSRF token mismatch', ['url' => $request->fullUrl()]);
+          // トークン不一致時のログ
+          Log::warning('CSRF token mismatch', [
+              'url' => $request->fullUrl(),
+              'method' => $request->method(),
+              'csrf_token_in_header' => $request->header('X-XSRF-TOKEN'),
+              'csrf_token_in_body' => $request->input('_token'),
+          ]);
           return response()->json(['error' => 'CSRF token mismatch'], 419);
       }
-  
+
+      // 例外処理：トークンが一致しなかった場合
+      Log::error('Unhandled CSRF token mismatch', [
+          'url' => $request->fullUrl(),
+          'method' => $request->method(),
+      ]);
+
       throw new TokenMismatchException('CSRF token mismatch.');
   }
 }
