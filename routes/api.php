@@ -22,19 +22,13 @@ use Illuminate\Support\Facades\Auth;
 // 認証不要のルート
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [RegisterController::class, 'register']);
-Route::post('/refresh', [LoginController::class, 'refresh']);
 Route::get('/user', [UsersController::class, 'user']);
-// Route::get('/sanctum/csrf-cookie', [LoginController::class, 'getCsrfCookie']);
-// Route::get('auth/google', [AuthController::class, 'redirectToGoogle']);
-// Route::get('auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
-
 
 // Sanctum認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [LoginController::class, 'logout']);
-
   Route::get('/user/me', [UsersController::class, 'me']); // この行を追加
-  // Route::post('/refresh-token', [RefreshTokenController::class, 'refresh']);
+  Route::post('/refresh-token', [LoginController::class, 'refresh']);
   Route::post('/update-fcm-token', [UsersController::class, 'updateFcmToken']);
   Route::post('/fcm-token', [FCMController::class, 'storeToken']);
 
