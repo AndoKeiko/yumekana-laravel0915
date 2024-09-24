@@ -1,11 +1,12 @@
 <?php
 
 return [
-'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'gajumaro.sakura.ne.jp')),
-    'prefix' => 'sanctum',
-    'expiration' => null,
-    'middleware' => [
-        'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
-        'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
-    ],
+  'paths' => ['api/*', 'sanctum/csrf-cookie'],
+  'allowed_methods' => ['*'],
+  'allowed_origins' => [env('FRONTEND_URL', 'https://gajumaro.sakura.ne.jp/yumekana')],
+  'allowed_origins_patterns' => [],
+  'allowed_headers' => ['*'],
+  'exposed_headers' => [],
+  'max_age' => 0,
+  'supports_credentials' => true,
 ];
