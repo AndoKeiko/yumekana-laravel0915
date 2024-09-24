@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
 // firebase-messaging-sw.js を提供するルート
@@ -13,3 +14,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/{any}', function () {
   return view('app');
 })->where('any', '.*');
+
+// web.phpに追加
+Route::post('/login', [LoginController::class, 'login'])->name('login');
