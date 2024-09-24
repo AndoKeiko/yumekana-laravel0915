@@ -109,26 +109,23 @@ class GoalsController extends Controller
 
   public function getUserGoals($userId): JsonResponse
   {
-    Log::info('Fetching goals for user ID: ' . $userId);
-
-    try {
-      DB::enableQueryLog();
-      $goals = Goal::where('user_id', $userId)->get();
-      dd(DB::getQueryLog());
-      Log::info('Goals fetched: ', $goals->toArray());
-      if ($goals->isEmpty()) {
-        Log::warning('No goals found for user ID: ' . $userId);
-    } else {
-        Log::info('Goals retrieved successfully for user ID: ' . $userId, $goals->toArray());
-    }
-
-    return response()->json($goals);
-    } catch (Exception $e) {
-        Log::error('Error fetching goals for user ID ' . $userId . ': ' . $e->getMessage());
-        return response()->json(['error' => 'Failed to fetch goals'], 500);
-    }
-    }
+      Log::info('Fetching goals for user ID: ' . $userId);
+  
+      try {
+          $goals = Goal::where('user_id', $userId)->get();
+          if ($goals->isEmpty()) {
+              Log::warning('No goals found for user ID: ' . $userId);
+          } else {
+              Log::info('Goals retrieved successfully for user ID: ' . $userId, $goals->toArray());
+          }
+  
+          return response()->json($goals);
+      } catch (Exception $e) {
+          Log::error('Error fetching goals for user ID ' . $userId . ': ' . $e->getMessage());
+          return response()->json(['error' => 'Failed to fetch goals'], 500);
+      }
   }
+  
 
 
 
