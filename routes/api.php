@@ -27,13 +27,11 @@ Route::post('/register', [RegisterController::class, 'register']);
 
 
 // Sanctum認証が必要なルート
-// Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [LoginController::class, 'logout']);
   Route::post('/refresh', [LoginController::class, 'refresh']);
   Route::get('/user', [UsersController::class, 'user']);
-
-// });
-  Route::get('/user/me', [UsersController::class, 'me']);
+  Route::get('/user/me', [UsersController::class, 'me']); // この行を追加
   // Route::post('/refresh-token', [RefreshTokenController::class, 'refresh']);
   Route::post('/update-fcm-token', [UsersController::class, 'updateFcmToken']);
   Route::post('/fcm-token', [FCMController::class, 'storeToken']);
@@ -67,7 +65,7 @@ Route::post('/register', [RegisterController::class, 'register']);
       Route::put('/{taskId}/review-interval', [TaskController::class, 'updateReviewInterval']);
     });
   });
-// 
+// });
 
 
 // if (app()->environment('local', 'staging')) {
@@ -78,4 +76,4 @@ Route::post('/register', [RegisterController::class, 'register']);
           'session' => $request->session()->all(),
       ]);
   });
-// }
+});
