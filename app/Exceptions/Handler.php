@@ -30,4 +30,12 @@ class Handler extends ExceptionHandler
         }
     });
     }
+
+    public function report(Throwable $exception)
+    {
+        Log::error('Exception occurred: ' . $exception->getMessage());
+        Log::error($exception->getTraceAsString());
+        
+        parent::report($exception);
+    }
 }
