@@ -4,7 +4,7 @@ use Laravel\Sanctum\Sanctum;
 
 return [
   'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'localhost:5174,gajumaro.sakura.ne.jp')),
-  'guard' => ['web', 'api'],
+  'guard' => ['web'],
   // 'expiration' => env('SANCTUM_TOKEN_EXPIRATION', 60 * 24),
   'expiration' => null,
   'middleware' => [
