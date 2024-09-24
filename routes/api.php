@@ -35,12 +35,12 @@ Route::middleware('auth:sanctum')->group(function () {
   // Route::post('/refresh-token', [RefreshTokenController::class, 'refresh']);
   Route::post('/update-fcm-token', [UsersController::class, 'updateFcmToken']);
   Route::post('/fcm-token', [FCMController::class, 'storeToken']);
-  
+
   // Users関連のルート
   Route::prefix('users')->group(function () {
-      Route::get('/', [UsersController::class, 'index']);
-      Route::post('/', [UsersController::class, 'createOrGetUser']);
-      Route::post('/complete-profile', [UsersController::class, 'completeProfile']);
+    Route::get('/', [UsersController::class, 'index']);
+    Route::post('/', [UsersController::class, 'createOrGetUser']);
+    Route::post('/complete-profile', [UsersController::class, 'completeProfile']);
   });
 
   // Goals関連のルート
@@ -65,15 +65,14 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::put('/{taskId}/review-interval', [TaskController::class, 'updateReviewInterval']);
     });
   });
-// });
-
-
-// if (app()->environment('local', 'staging')) {
-  Route::get('/debug', function (Request $request) {
-      return response()->json([
-          'user' => $request->user(),
-          'authenticated' => Auth::check(),
-          'session' => $request->session()->all(),
-      ]);
-  });
 });
+
+
+  // if (app()->environment('local', 'staging')) {
+  Route::get('/debug', function (Request $request) {
+    return response()->json([
+      'user' => $request->user(),
+      'authenticated' => Auth::check(),
+      'session' => $request->session()->all(),
+    ]);
+  });
