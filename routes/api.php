@@ -27,7 +27,7 @@ Route::post('/register', [RegisterController::class, 'register']);
 
 
 // Sanctum認証が必要なルート
-Route::middleware('auth:sanctum')->group(function () {
+// Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [LoginController::class, 'logout']);
   Route::post('/refresh', [LoginController::class, 'refresh']);
   Route::get('/user', [UsersController::class, 'user']);
@@ -65,7 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::put('/{taskId}/review-interval', [TaskController::class, 'updateReviewInterval']);
     });
   });
-});
+// });
 
 
 // if (app()->environment('local', 'staging')) {
