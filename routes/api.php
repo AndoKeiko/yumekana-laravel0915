@@ -24,6 +24,7 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/refresh', [LoginController::class, 'refresh']);
 Route::get('/user', [UsersController::class, 'user']);
+Route::get('/sanctum/csrf-cookie', [LoginController::class, 'getCsrfCookie']);
 // Route::get('auth/google', [AuthController::class, 'redirectToGoogle']);
 // Route::get('auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
