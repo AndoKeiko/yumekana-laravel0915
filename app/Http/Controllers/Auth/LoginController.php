@@ -57,6 +57,8 @@ class LoginController extends Controller
             return response()->json([
                 'user' => $user,
                 'message' => 'Login successful',
+                'access_token' => $accessToken,  // レスポンスにトークンを含める
+                'refresh_token' => $refreshToken // レスポンスにトークンを含める
             ])->cookie($accessTokenCookie)
               ->cookie($refreshTokenCookie);
         } catch (ValidationException $e) {
