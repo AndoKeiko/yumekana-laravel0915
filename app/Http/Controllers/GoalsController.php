@@ -109,9 +109,19 @@ class GoalsController extends Controller
 
   public function getUserGoals($userId): JsonResponse
   {
-    $goals = Goal::where('user_id', $userId)->get();
-    return response()->json($goals);
+      Log::info('Fetching goals for user ID: ' . $userId);
+  
+      try {
+          $goals = Goal::where('user_id', $userId)->get();
+          Log::info('Goals fetched: ', $goals->toArray());
+  
+          return response()->json($goals);
+      } catch (Exception $e) {
+          Log::error('Error fetching goals for user ID ' . $userId . ': ' . $e->getMessage());
+          return response()->json(['error' => 'Failed to fetch goals'], 500);
+      }
   }
+  
 
 
   public function chat(Request $request, $id)
