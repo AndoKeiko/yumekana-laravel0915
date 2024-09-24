@@ -24,7 +24,7 @@ class Kernel extends HttpKernel
       \Illuminate\View\Middleware\ShareErrorsFromSession::class,
       \App\Http\Middleware\VerifyCsrfToken::class,
       \Illuminate\Routing\Middleware\SubstituteBindings::class,
-      // EnsureFrontendRequestsAreStatefulをここから削除
+      \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class, // 再追加
     ],
 
     'api' => [
