@@ -1,9 +1,12 @@
 <?php
 
 return [
-  'paths' => ['api/*', 'sanctum/csrf-cookie'],
+  'paths' => ['api/*', 'sanctum/csrf-cookie'],  // SanctumのCSRF用パスを追加
   'allowed_methods' => ['*'],
-  'allowed_origins' => ['https://gajumaro.sakura.ne.jp', 'http://localhost:5174'],
+  'allowed_origins' => ['https://gajumaro.sakura.ne.jp'],  // フロントエンドのURLを指定
+  'allowed_origins_patterns' => [],
   'allowed_headers' => ['*'],
-  'supports_credentials' => true,
+  'exposed_headers' => [],
+  'max_age' => 0,
+  'supports_credentials' => true,  // クッキーを利用するため、trueに設定
 ];
