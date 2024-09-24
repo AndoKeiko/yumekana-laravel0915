@@ -9,7 +9,7 @@ return [
 
   'env' => env('APP_ENV', 'production'),
 
-  'debug' => (bool) env('APP_DEBUG', false),
+'debug' => env('APP_DEBUG', true),
 
   'url' => env('APP_URL', 'https://gajumaro.sakura.ne.jp/yumekana-lala'),
 
