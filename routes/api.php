@@ -27,14 +27,14 @@ Route::post('/refresh', [LoginController::class, 'refresh']);
 // Route::get('auth/google', [AuthController::class, 'redirectToGoogle']);
 // Route::get('auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-  Log::info('User request', [
-      'user' => $request->user(),
-      'headers' => $request->headers->all(),
-      'session' => $request->session()->all(),
-  ]);
-  return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//   Log::info('User request', [
+//       'user' => $request->user(),
+//       'headers' => $request->headers->all(),
+//       'session' => $request->session()->all(),
+//   ]);
+//   return $request->user();
+// });
 // Sanctum認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [LoginController::class, 'logout']);
