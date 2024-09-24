@@ -109,19 +109,27 @@ class GoalsController extends Controller
 
   public function getUserGoals($userId): JsonResponse
   {
-      Log::info('Fetching goals for user ID: ' . $userId);
-  
-      try {
-          $goals = Goal::where('user_id', $userId)->get();
-          Log::info('Goals fetched: ', $goals->toArray());
-  
-          return response()->json($goals);
-      } catch (Exception $e) {
-          Log::error('Error fetching goals for user ID ' . $userId . ': ' . $e->getMessage());
-          return response()->json(['error' => 'Failed to fetch goals'], 500);
-      }
+    Log::info('Fetching goals for user ID: ' . $userId);
+
+    try {
+      DB::enableQueryLog();
+      $goals = Goal::where('user_id', $userId)->get();
+      dd(DB::getQueryLog());
+      Log::info('Goals fetched: ', $goals->toArray());
+      if ($goals->isEmpty()) {
+        Log::warning('No goals found for user ID: ' . $userId);
+    } else {
+        Log::info('Goals retrieved successfully for user ID: ' . $userId, $goals->toArray());
+    }
+
+    return response()->json($goals);
+    } catch (Exception $e) {
+        Log::error('Error fetching goals for user ID ' . $userId . ': ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to fetch goals'], 500);
+    }
+    }
   }
-  
+
 
 
   public function chat(Request $request, $id)
@@ -239,23 +247,23 @@ class GoalsController extends Controller
 
   private function createTasks(array $tasks, int $goalId, int $userId): array
   {
-      $createdTasks = [];
-      foreach ($tasks as $task) {
-          $createdTask = Task::create([
-              'goal_id' => $goalId,
-              'user_id' => $userId,
-              'name' => $task['taskName'],
-              'estimated_time' => $task['taskTime'],
-              'priority' => $task['taskPriority'],
-          ]);
-          $createdTasks[] = [
-              'id' => $createdTask->id,
-              'taskName' => $createdTask->name,
-              'taskTime' => $createdTask->estimated_time,
-              'taskPriority' => $createdTask->priority,
-          ];
-      }
-      return $createdTasks;
+    $createdTasks = [];
+    foreach ($tasks as $task) {
+      $createdTask = Task::create([
+        'goal_id' => $goalId,
+        'user_id' => $userId,
+        'name' => $task['taskName'],
+        'estimated_time' => $task['taskTime'],
+        'priority' => $task['taskPriority'],
+      ]);
+      $createdTasks[] = [
+        'id' => $createdTask->id,
+        'taskName' => $createdTask->name,
+        'taskTime' => $createdTask->estimated_time,
+        'taskPriority' => $createdTask->priority,
+      ];
+    }
+    return $createdTasks;
   }
 
 
