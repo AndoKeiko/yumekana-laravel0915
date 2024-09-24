@@ -141,19 +141,29 @@ class UsersController extends Controller
       ], 500);
     }
   }
-  public function user(Request $request): JsonResponse
-  {
-    $user = $request->user();
+// UsersController.php
 
-    if (!$user) {
-      return response()->json(['message' => 'Unauthenticated.'], 401);
+public function user(Request $request)
+{
+    try {
+        $user = $request->user(); // ログインユーザーを取得
+        if (!$user) {
+            Log::error('User not authenticated');
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        Log::info('User info request', ['user_id' => $user->id]);
+        return response()->json($user);
+    } catch (\Exception $e) {
+        Log::error('Error fetching user info', [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        return response()->json(['error' => 'Failed to fetch user info'], 500);
     }
+}
 
-    return response()->json([
-      'message' => 'User retrieved successfully',
-      'user' => $user
-    ]);
-  }
+
   public function me()
   {
       $user = auth()->user();
