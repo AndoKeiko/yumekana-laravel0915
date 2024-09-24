@@ -1,9 +1,11 @@
 <?php
 
 return [
-  'paths' => ['api/*', 'sanctum/csrf-cookie'],
-  'allowed_methods' => ['*'],
-  'allowed_origins' => ['https://gajumaro.sakura.ne.jp'],  // フロントエンドのURLを許可
-  'allowed_headers' => ['*'],
-  'supports_credentials' => true,  // クッキーを共有するために必要
+'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'gajumaro.sakura.ne.jp')),
+    'prefix' => 'sanctum',
+    'expiration' => null,
+    'middleware' => [
+        'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
+        'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
+    ],
 ];
