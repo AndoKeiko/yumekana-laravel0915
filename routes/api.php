@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Auth;
 // 認証不要のルート
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [RegisterController::class, 'register']);
-Route::get('/user', [UsersController::class, 'user']);
+Route::get('/user', [LoginController::class, 'user']);
 
 // Sanctum認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {
