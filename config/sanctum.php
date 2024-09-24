@@ -5,7 +5,7 @@ use Laravel\Sanctum\Sanctum;
 return [
 'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'gajumaro.sakura.ne.jp')),
   'prefix' => '',
-  'guard' => ['web', 'admin'],
+  'guard' => ['api'],
   'expiration' => null,
   'middleware' => [
       'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
