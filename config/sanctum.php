@@ -10,5 +10,4 @@ return [
       'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
   ],
   'expiration' => 60 * 24, // 24時間
-  'prefix' => 'sanctum',
 ];

@@ -18,8 +18,8 @@ return [
   ),
   'path' => '/',
   'domain' => 'gajumaro.jp',
-  'secure' => env('SESSION_SECURE_COOKIE', true),
+  'secure' => true,
   'http_only' => true,
-  'same_site' => 'lax',
+  'same_site' => 'None',
   'partitioned' => false,
 ];
