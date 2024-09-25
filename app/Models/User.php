@@ -36,11 +36,12 @@ class User extends Authenticatable
     'fcm_token' => 'string',
   ];
 
-  use Notifiable;
 
-  public function routeNotificationForFcm()
-  {
-      // デバイストークンを返します
-      return $this->fcm_token;
-  }
-}
+//   use Notifiable;
+
+//   public function routeNotificationForFcm()
+//   {
+//       // デバイストークンを返します
+//       return $this->fcm_token;
+//   }
+// }
