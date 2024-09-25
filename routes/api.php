@@ -99,7 +99,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-Route::middleware(['auth:sanctum'])->get('/debug', function (Request $request) {
+Route::get('/debug', function (Request $request) {
   try {
       return response()->json([
           'user' => $request->user(),
