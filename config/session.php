@@ -18,8 +18,7 @@ return [
   ),
   'path' => '/',
   'domain' => 'gajumaro.sakura.ne.jp',
-  // 'secure' => true,  // これは必ずSSLを使用している場合のみ
-  'secure' => env('SESSION_SECURE_COOKIE', false),
+  'secure' => true,  // これは必ずSSLを使用している場合のみ
   'http_only' => true,
   'same_site' => 'lax',
   'partitioned' => false,
