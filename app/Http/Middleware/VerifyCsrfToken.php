@@ -24,6 +24,7 @@ class VerifyCsrfToken extends Middleware
     'https://gajumaro.sakura.ne.jp/yumekana-lala/*',
   ];
 
+  
   /**
    * Handle an incoming request.
    *
