@@ -101,14 +101,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/debug', function (Request $request) {
   try {
+      $user = $request->user();
       return response()->json([
-          'user' => $request->user(),
+          'user' => $user ? $user->toArray() : null,
           'authenticated' => Auth::check(),
           'session' => $request->session()->all(),
           'token' => $request->bearerToken(),
           'headers' => $request->headers->all(),
       ]);
   } catch (\Exception $e) {
+      \Log::error('Debug route error:', [
+          'message' => $e->getMessage(),
+          'trace' => $e->getTraceAsString()
+      ]);
       return response()->json([
           'error' => $e->getMessage(),
           'trace' => $e->getTraceAsString()

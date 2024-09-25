@@ -31,4 +31,19 @@ class Handler extends ExceptionHandler
     });
     }
 
+    public function report(Throwable $exception)
+    {
+        if ($this->shouldReport($exception)) {
+            Log::error('Detailed exception report: ', [
+                'message' => $exception->getMessage(),
+                'code' => $exception->getCode(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'trace' => $exception->getTraceAsString(),
+            ]);
+        }
+
+        parent::report($exception);
+    }
+
 }
