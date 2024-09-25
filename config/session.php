@@ -18,7 +18,7 @@ return [
   ),
   'path' => '/',
   'domain' => 'gajumaro.jp',
-  'secure' => true,  // これは必ずSSLを使用している場合のみ
+  'secure' => env('SESSION_SECURE_COOKIE', true),
   'http_only' => true,
   'same_site' => 'lax',
   'partitioned' => false,
