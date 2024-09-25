@@ -149,6 +149,7 @@ class LoginController extends Controller
             $newRefreshToken->token->save();
 
             // クッキーに新しいトークンを設定
+            $isSecure = app()->environment('production') ? true : false;
             $accessTokenCookie = cookie('access_token', $newAccessToken->plainTextToken, self::ACCESS_TOKEN_EXPIRATION_MINUTES, null, null, $isSecure, true);
             $refreshTokenCookie = cookie('refresh_token', $newRefreshToken->plainTextToken, self::REFRESH_TOKEN_EXPIRATION_MINUTES, null, null, $isSecure, true);
 

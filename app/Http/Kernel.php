@@ -29,10 +29,11 @@ class Kernel extends HttpKernel
 
     'api' => [
       \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-      \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
+      \Illuminate\Session\Middleware\StartSession::class,  // この行を追加
       \Illuminate\Routing\Middleware\SubstituteBindings::class,
-    ],
-  ];
+      'throttle:api',
+  ],
+];
 
   protected $middlewareAliases = [
     'auth' => \App\Http\Middleware\Authenticate::class,

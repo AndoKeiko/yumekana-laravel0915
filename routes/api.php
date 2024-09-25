@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\RefreshTokenController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\FCMController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 // CORSプリフライトリクエスト用のルート（必要な場合）
 // Route::options('/{any}', function () {
@@ -22,11 +23,45 @@ use Illuminate\Support\Facades\Auth;
 // 認証不要のルート
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [RegisterController::class, 'register']);
-Route::get('/user', [UsersController::class, 'user']);
+Route::post('/refresh', [LoginController::class, 'refresh']);
+// Route::get('auth/google', [AuthController::class, 'redirectToGoogle']);
+// Route::get('auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//   Log::info('User request', [
+//     'user' => $request->user(),
+//     'headers' => $request->headers->all(),
+//     'session' => $request->session()->all(),
+//   ]);
+//   return $request->user();
+// });
 // Sanctum認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [LoginController::class, 'logout']);
+  Route::get('/user', function (Request $request) {
+    Log::info('User request', [
+        'user' => $request->user() ? $request->user()->toArray() : null,
+        'headers' => $request->headers->all(),
+        'session' => $request->session()->all(),
+        'cookies' => $request->cookies->all(),
+        'ip' => $request->ip(),
+        'user_agent' => $request->userAgent(),
+        'auth' => [
+            'check' => Auth::check(),
+            'id' => Auth::id(),
+        ],
+    ]);
+
+    if (!$request->user()) {
+        Log::warning('Unauthenticated user request', [
+            'headers' => $request->headers->all(),
+            'session' => $request->session()->all(),
+        ]);
+        return response()->json(['message' => 'Unauthenticated'], 401);
+    }
+
+    return $request->user();
+});
   Route::get('/user/me', [UsersController::class, 'me']); // この行を追加
   Route::post('/refresh-token', [LoginController::class, 'refresh']);
   Route::post('/update-fcm-token', [UsersController::class, 'updateFcmToken']);
@@ -64,11 +99,17 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-  // if (app()->environment('local', 'staging')) {
-  Route::get('/debug', function (Request $request) {
-    return response()->json([
-      'user' => $request->user(),
-      'authenticated' => Auth::check(),
-      'session' => $request->session()->all(),
-    ]);
-  });
+Route::get('/debug', function (Request $request) {
+  try {
+      return response()->json([
+          'user' => $request->user(),
+          'authenticated' => Auth::check(),
+          'session' => $request->session()->all(),
+      ]);
+  } catch (\Exception $e) {
+      return response()->json([
+          'error' => $e->getMessage(),
+          'trace' => $e->getTraceAsString()
+      ], 500);
+  }
+});

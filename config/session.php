@@ -17,9 +17,9 @@ return [
     Str::slug(env('APP_NAME', 'laravel'), '_') . '_session'
   ),
   'path' => '/',
-  'domain' => 'gajumaro.sakura.ne.jp',
-  'secure' => true,  // これは必ずSSLを使用している場合のみ
+  'domain' => 'gajumaro.jp',
+  'secure' => env('SESSION_SECURE_COOKIE', true),
   'http_only' => true,
-  'same_site' => 'Lax',
+  'same_site' => 'lax',
   'partitioned' => false,
 ];
