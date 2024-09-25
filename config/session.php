@@ -16,7 +16,7 @@ return [
     'SESSION_COOKIE',
     Str::slug(env('APP_NAME', 'laravel'), '_') . '_session'
   ),
-  'path' => '/yumekana-lala',
+  'path' => '/',
   'domain' => 'gajumaro.sakura.ne.jp',
   'secure' => true,  // これは必ずSSLを使用している場合のみ
   'http_only' => true,
