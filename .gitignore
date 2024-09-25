@@ -11,7 +11,7 @@
 .env.testing
 .env卒制
 .envローカル
-.env0925
+.env.0925
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
