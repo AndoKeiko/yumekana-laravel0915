@@ -44,4 +44,4 @@ class User extends Authenticatable
 //       // デバイストークンを返します
 //       return $this->fcm_token;
 //   }
-// }
+}
