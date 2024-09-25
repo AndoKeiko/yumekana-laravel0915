@@ -1,10 +1,9 @@
 <?php
 
 return [
-  'paths' => ['api/*', 'sanctum/csrf-cookie'],  // SanctumのCSRF用パスを追加
+  'paths' => ['api/*', 'sanctum/csrf-cookie'],
+  'allowed_origins' => ['https://gajumaro.jp'],
   'allowed_methods' => ['*'],
-  'allowed_origins' => ['https://gajumaro.jp'],  // フロントエンドのURLを指定
-  'allowed_origins_patterns' => [],
   'allowed_headers' => ['*'],
   'exposed_headers' => [],
   'max_age' => 0,

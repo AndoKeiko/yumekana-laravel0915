@@ -110,7 +110,7 @@ Route::get('/debug', function (Request $request) {
           'headers' => $request->headers->all(),
       ]);
   } catch (\Exception $e) {
-      \Log::error('Debug route error:', [
+      Log::error('Debug route error:', [
           'message' => $e->getMessage(),
           'trace' => $e->getTraceAsString()
       ]);
