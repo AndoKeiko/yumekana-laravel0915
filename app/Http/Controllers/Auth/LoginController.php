@@ -57,8 +57,8 @@ class LoginController extends Controller
             return response()->json([
                 'user' => $user,
                 'message' => 'Login successful',
-                'access_token' => $accessToken, 0, 10,
-                'refresh_token' => $refreshToken, 0, 10
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken
             ])->cookie($accessTokenCookie)
               ->cookie($refreshTokenCookie);
         } catch (ValidationException $e) {
