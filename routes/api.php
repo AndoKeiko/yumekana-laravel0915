@@ -27,28 +27,51 @@ Route::post('/refresh', [LoginController::class, 'refresh']);
 // Route::get('auth/google', [AuthController::class, 'redirectToGoogle']);
 // Route::get('auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-  Log::info('User request', [
-      'user' => $request->user(),
-      'headers' => $request->headers->all(),
-      'session' => $request->session()->all(),
-  ]);
-  return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//   Log::info('User request', [
+//     'user' => $request->user(),
+//     'headers' => $request->headers->all(),
+//     'session' => $request->session()->all(),
+//   ]);
+//   return $request->user();
+// });
 // Sanctum認証が必要なルート
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [LoginController::class, 'logout']);
-  Route::get('/user', [UsersController::class, 'user']);
+  Route::get('/user', function (Request $request) {
+    Log::info('User request', [
+        'user' => $request->user() ? $request->user()->toArray() : null,
+        'headers' => $request->headers->all(),
+        'session' => $request->session()->all(),
+        'cookies' => $request->cookies->all(),
+        'ip' => $request->ip(),
+        'user_agent' => $request->userAgent(),
+        'auth' => [
+            'check' => Auth::check(),
+            'id' => Auth::id(),
+        ],
+    ]);
+
+    if (!$request->user()) {
+        Log::warning('Unauthenticated user request', [
+            'headers' => $request->headers->all(),
+            'session' => $request->session()->all(),
+        ]);
+        return response()->json(['message' => 'Unauthenticated'], 401);
+    }
+
+    return $request->user();
+});
   Route::get('/user/me', [UsersController::class, 'me']); // この行を追加
   // Route::post('/refresh-token', [RefreshTokenController::class, 'refresh']);
   Route::post('/update-fcm-token', [UsersController::class, 'updateFcmToken']);
   Route::post('/fcm-token', [FCMController::class, 'storeToken']);
-  
+
   // Users関連のルート
   Route::prefix('users')->group(function () {
-      Route::get('/', [UsersController::class, 'index']);
-      Route::post('/', [UsersController::class, 'createOrGetUser']);
-      Route::post('/complete-profile', [UsersController::class, 'completeProfile']);
+    Route::get('/', [UsersController::class, 'index']);
+    Route::post('/', [UsersController::class, 'createOrGetUser']);
+    Route::post('/complete-profile', [UsersController::class, 'completeProfile']);
   });
 
   // Goals関連のルート
@@ -77,11 +100,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 // if (app()->environment('local', 'staging')) {
-  Route::get('/debug', function (Request $request) {
-      return response()->json([
-          'user' => $request->user(),
-          'authenticated' => Auth::check(),
-          'session' => $request->session()->all(),
-      ]);
-  });
+Route::get('/debug', function (Request $request) {
+  return response()->json([
+    'user' => $request->user(),
+    'authenticated' => Auth::check(),
+    'session' => $request->session()->all(),
+  ]);
+});
 // }

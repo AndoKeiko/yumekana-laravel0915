@@ -8,5 +8,5 @@ return [
   'allowed_headers' => ['*'],
   'exposed_headers' => [],
   'max_age' => 0,
-  'supports_credentials' => true,  // クッキーを利用するため、trueに設定
+  'supports_credentials' => true, // クッキーを利用するため、trueに設定
 ];
