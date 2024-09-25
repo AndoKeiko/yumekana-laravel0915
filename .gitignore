@@ -10,6 +10,7 @@
 .env.production
 .env.testing
 .env卒制
+.env.0925
 .envローカル
 .phpunit.result.cache
 Homestead.json
