@@ -9,10 +9,10 @@ return [
     ',gajumaro.sakura.ne.jp'
 ))),
   'guard' => ['web'],
-  // 'middleware' => [
-  //   'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
-  //   'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
-  // ],
+  'middleware' => [
+    'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
+    'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
+  ],
   'domain' => env('SANCTUM_COOKIE_DOMAIN', 'gajumaro.sakura.ne.jp'),
   'expiration' => 60 * 24, // 24時間
   'refresh_ttl' => 20160, // 2週間
