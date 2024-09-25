@@ -20,6 +20,6 @@ return [
   'domain' => 'gajumaro.sakura.ne.jp',
   'secure' => true,  // これは必ずSSLを使用している場合のみ
   'http_only' => true,
-  'same_site' => 'None',
+  'same_site' => 'lax',
   'partitioned' => false,
 ];
