@@ -20,5 +20,5 @@ return [
   'domain' => env('SESSION_DOMAIN', 'gajumaro.jp'),
   'secure' => env('SESSION_SECURE_COOKIE', true),
   'http_only' => true,
-  'same_site' => 'None',
+  'same_site' => env('SESSION_SAMESITE', 'None'),
 ];
