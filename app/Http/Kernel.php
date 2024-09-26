@@ -24,12 +24,12 @@ class Kernel extends HttpKernel
       \Illuminate\View\Middleware\ShareErrorsFromSession::class,
       \App\Http\Middleware\VerifyCsrfToken::class,
       \Illuminate\Routing\Middleware\SubstituteBindings::class,
+      \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class, 
     ],
 
     'api' => [
       \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-      \App\Http\Middleware\BypassAuthInTestEnvironment::class,  // この行を追加
-      \Illuminate\Session\Middleware\StartSession::class,
+      \Illuminate\Session\Middleware\StartSession::class,  // この行を追加
       \Illuminate\Routing\Middleware\SubstituteBindings::class,
       'throttle:api',
   ],

@@ -3,7 +3,6 @@
 use Illuminate\Support\Str;
 
 return [
-  'driver' => env('SESSION_DRIVER', 'file'),
   'lifetime' => env('SESSION_LIFETIME', 120),
   'expire_on_close' => false,
   'encrypt' => false,
@@ -12,9 +11,9 @@ return [
       'SESSION_COOKIE',
       Str::slug(env('APP_NAME', 'laravel'), '_').'_session'
   ),
-  'domain' => env('SESSION_DOMAIN', null),
+  'domain' => 'gajumaro.jp',
   'path' => '/',
-  'secure' => env('SESSION_SECURE_COOKIE', true),
+  'secure' => true,
   'http_only' => true,
-  'same_site' => 'lax',
+  'same_site' => 'None',
 ];
