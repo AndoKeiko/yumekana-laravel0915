@@ -8,12 +8,12 @@ return [
   'encrypt' => false,
   'lottery' => [2, 100],
   'cookie' => env(
-      'SESSION_COOKIE',
-      Str::slug(env('APP_NAME', 'laravel'), '_').'_session'
+    'SESSION_COOKIE',
+    Str::slug(env('APP_NAME', 'laravel'), '_') . '_session'
   ),
-  'domain' => 'gajumaro.jp',
+  'domain' => env('SESSION_DOMAIN', 'gajumaro.jp'),
   'path' => '/',
-  'secure' => true,
+  'secure' => env('SESSION_SECURE_COOKIE', true),
   'http_only' => true,
   'same_site' => 'None',
 ];
